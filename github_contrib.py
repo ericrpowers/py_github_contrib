@@ -2,13 +2,9 @@ import gh_user
 
 
 def main():
-    ghu = None
-
     print "*~*~*~* GitHub User Contribution Retriever *~*~*~*"
+    ghu = gh_user.User()
     while True:
-        if not ghu:
-            ghu = gh_user.User()
-
         # Decide if we want the whole year or a date range
         answer = ""
         start_date, end_date = (None,) * 2
@@ -18,7 +14,7 @@ def main():
 
         # Grab the dates specified
         if answer == "d":
-            start_date, end_date = date_range()
+            start_date, end_date = __date_range()
 
         # Gather contributions and print result
         contributions = ghu.get_contributions(start_date, end_date)
@@ -35,17 +31,17 @@ def main():
         if answer == "exit":
             break
         elif answer == "u":
-            ghu = None
+            ghu.get_new_user()
 
 
-def date_range():
+def __date_range():
     arr = [None] * 2
     for i in xrange(2):
         while True:
             try:
                 date = gh_user.gh_api.parser.parse(raw_input(
                     "What is the " + ("start" if i == 0 else "end") + " date?(YYYY-MM-DD) ").replace("\\s+", ""))
-                if 365 - (gh_user.gh_api.current_date - date).days < 0:
+                if 365 - (gh_user.gh_api.CURRENT_DATE - date).days < 0:
                     print "Date is out of range (has to be within 365 days of today's date)."
                     continue
                 if arr[0] is not None and (date - gh_user.gh_api.parser.parse(arr[0])).days < 0:
@@ -54,6 +50,7 @@ def date_range():
                 arr[i] = date.isoformat()
                 break
             except ValueError or OverflowError:
+                print "Not a valid value. Please try again."
                 arr[i] = None
 
     return arr[0], arr[1]

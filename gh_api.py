@@ -6,17 +6,17 @@ import requests
 import dateutil.parser as parser
 
 # To avoid saving sensitive info into the code
-__auth = (os.environ.get('GH_USER', ''), os.environ.get('GH_USER_OATOKEN', ''))
-current_date = datetime.datetime.now()
+__AUTH = (os.environ.get('GH_USER', ''), os.environ.get('GH_USER_OATOKEN', ''))
+CURRENT_DATE = datetime.datetime.utcnow()
 
 
 def is_user(username):
-    r = requests.get('https://api.github.com/users/' + username, auth=__auth)
+    r = requests.get('https://api.github.com/users/' + username, auth=__AUTH)
     return r.ok
 
 
 def get_repos(username):
-    r = requests.get('https://api.github.com/users/' + username + '/repos?type=all', auth=__auth)
+    r = requests.get('https://api.github.com/users/' + username + '/repos?type=all', auth=__AUTH)
     if not r.ok:
         return None
     repo_list = json.loads(r.text or r.content)
@@ -30,14 +30,14 @@ def get_contributions(username):
         3) Issues opened by an user """
     init_url = 'https://api.github.com/repos/'
     repos = get_repos(username)
-    if len(repos) == 0:
+    if repos is None or len(repos) == 0:
         return []
     # Commits and Issues
     # Per documentation: every pull request is an issue, but not every issue is a pull request.
     response_list_dict = []
     for cmd in ['/commits?author=', '/issues?creator=']:
         url_list = [init_url + repo + cmd + username for repo in repos]
-        request_list = [grequests.get(url, auth=__auth) for url in url_list]
+        request_list = [grequests.get(url, auth=__AUTH) for url in url_list]
         response_list_dict.append(grequests.imap(request_list))
 
     # Add up everything with respect to the date
@@ -52,7 +52,7 @@ def get_contributions(username):
                     date = parser.parse(jr['commit']['author']['date']).replace(tzinfo=None)
                 except TypeError:
                     date = parser.parse(jr['created_at']).replace(tzinfo=None)
-                index = 364 - (current_date - date).days
+                index = 364 - (CURRENT_DATE - date).days
                 if index >= 0:
                     if contrib_list[index] == 0:
                         contrib_list[index] = 1

@@ -1,3 +1,6 @@
 python-dateutil
 requests
 grequests
+mock
+pytest
+pexpect
