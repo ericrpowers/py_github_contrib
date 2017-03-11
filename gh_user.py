@@ -18,7 +18,7 @@ class User:
             if answer and answer not in self.__user_list:
                 self.__user_list[answer] = [] if gh_api.is_user(answer) else None
 
-            if self.__user_list[answer] is not None:
+            if answer and self.__user_list[answer] is not None:
                 self.__username = answer
             else:
                 answer = None

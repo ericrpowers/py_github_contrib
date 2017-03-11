@@ -22,6 +22,11 @@ class TestGHUser(UserSetUp):
             self.user.get_new_user()
             self.assertEqual(self.user._User__user_list['@!@_test_@!@'], None)
 
+    def test_get_new_user_empty(self):
+        with patch('__builtin__.raw_input', side_effect=['', 'ericrpowers']):
+            self.user.get_new_user()
+            self.assertEqual(self.user._User__user_list['ericrpowers'], [])
+
     def test_get_new_user_Dogild(self):
         with patch('__builtin__.raw_input', side_effect=['Dogild']):
             self.user.get_new_user()

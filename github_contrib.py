@@ -9,8 +9,7 @@ def main():
         answer = ""
         start_date, end_date = (None,) * 2
         while not (answer == "y" or answer == "d"):
-            answer = raw_input("Do you want the entire year or a specific date range?(y/d) ").replace("\\s+", "")\
-                .lower()
+            answer = raw_input("Do you want the entire year or a specific date range?(y/d) ").strip().lower()
 
         # Grab the dates specified
         if answer == "d":
@@ -26,8 +25,7 @@ def main():
         # Find out if we want a new user or not
         answer = ""
         while not (answer == "u" or answer == "d" or answer == "exit"):
-            answer = raw_input("Lookup new user, new date, or exit?(u/d/exit) ").replace("\\s+", "")\
-                .lower()
+            answer = raw_input("Lookup new user, new date, or exit?(u/d/exit) ").strip().lower()
         if answer == "exit":
             break
         elif answer == "u":
