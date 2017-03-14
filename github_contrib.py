@@ -3,8 +3,12 @@ import gh_user
 
 def main():
     print "*~*~*~* GitHub User Contribution Retriever *~*~*~*"
-    ghu = gh_user.User()
+    user_list = gh_user.Users()
+    username = None
+
     while True:
+        if username is None:
+            username = __get_new_user(user_list)
         # Decide if we want the whole year or a date range
         answer = ""
         start_date, end_date = (None,) * 2
@@ -16,7 +20,7 @@ def main():
             start_date, end_date = __date_range()
 
         # Gather contributions and print result
-        contributions = ghu.get_contributions(start_date, end_date)
+        contributions = user_list.get_contributions(username, start_date, end_date, True)
         if not contributions:
             print "No contributions exist for this user or the specified date range"
         else:
@@ -29,7 +33,17 @@ def main():
         if answer == "exit":
             break
         elif answer == "u":
-            ghu.get_new_user()
+            username = None
+
+
+def __get_new_user(ul):
+    # Let's find out which user we will start off with
+    while True:
+        answer = raw_input("Which user would you like to look up? ").strip()
+        if ul.add_new_user(answer):
+            return answer
+        else:
+            print("Invalid input or non-existent user.")
 
 
 def __date_range():

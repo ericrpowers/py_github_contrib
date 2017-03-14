@@ -1,35 +1,42 @@
 import gh_api
 
 
-class User:
+class Users:
     def __init__(self):
-        self.__username = None
-        self.__user_list = {}
-        self.get_new_user()
+        self.__user_list = []
 
-    def username(self):
-        return self.__username
+    def get_user_list(self):
+        return self.__user_list
 
-    def get_new_user(self):
-        answer = None
-        # Let's find out which user we will start off with
-        while not answer:
-            answer = raw_input("Which user would you like to look up? ").strip()
-            if answer and answer not in self.__user_list:
-                self.__user_list[answer] = [] if gh_api.is_user(answer) else None
+    def add_new_user(self, username):
+        if username and len([user for user in self.__user_list if user['username'] == username]) == 0:
+            if gh_api.is_user(username):
+                self.__user_list.append({
+                    'username': username,
+                    'contributions': gh_api.get_contributions(username)
+                })
+                return True
+        return False
 
-            if answer and self.__user_list[answer] is not None:
-                self.__username = answer
-            else:
-                answer = None
-                print("Invalid input or non-existent user.")
-
-    def get_contributions(self, start, end):
-        if len(self.__user_list[self.__username]) == 0:
-            self.__user_list[self.__username] = gh_api.get_contributions(self.__username)
+    def get_contributions(self, username, start, end, refetch=False):
+        if not username:
+            return []
+        user = [user for user in self.__user_list if user['username'] == username]
+        if len(user) == 0:
+            return []
+        user = user[0]
+        if refetch is True:
+            user['contributions'] = gh_api.get_contributions(username)
 
         if not (start and end):
-            return self.__user_list[self.__username]
+            return user['contributions']
         start_index = 364 - (gh_api.CURRENT_DATE - gh_api.parser.parse(start)).days
         end_index = 364 - (gh_api.CURRENT_DATE - gh_api.parser.parse(end)).days
-        return [self.__user_list[self.__username][i] for i in xrange(start_index, end_index + 1)]
+        return [user['contributions'][i] for i in xrange(start_index, end_index + 1)]
+
+    def remove_user(self, username):
+        user = [user for user in self.__user_list if user['username'] == username]
+        if len(user) == 0:
+            return False
+        self.__user_list.remove(user[0])
+        return True

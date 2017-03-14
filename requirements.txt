@@ -1,6 +1,7 @@
 python-dateutil
 requests
 grequests
-mock
 pytest
-pexpect
+flask
+flask-restful
+flask-httpauth
