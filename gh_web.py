@@ -36,7 +36,8 @@ class UserListAPI(Resource):
         super(UserListAPI, self).__init__()
 
     # Get user list
-    def get(self):
+    @staticmethod
+    def get():
         ulist = users.get_user_list()
         return {'users': [marshal(user, user_fields) for user in ulist]}
 
@@ -56,7 +57,8 @@ class UserAPI(Resource):
         super(UserAPI, self).__init__()
 
     # Get user contributions for the year
-    def get(self, username):
+    @staticmethod
+    def get(username):
         ulist = users.get_user_list()
         if len(ulist) == 0:
             abort(404)
@@ -66,7 +68,8 @@ class UserAPI(Resource):
         return {'user': marshal(user[0], user_fields)}
 
     # Update user's contributions
-    def put(self, username):
+    @staticmethod
+    def put(username):
         user = [user for user in users.get_user_list() if user['username'] == username]
         if len(user) == 0:
             abort(404)
@@ -74,7 +77,8 @@ class UserAPI(Resource):
         return {'user': marshal(user, user_fields)}
 
     # Delete a user
-    def delete(self, username):
+    @staticmethod
+    def delete(username):
         user = [user for user in users.get_user_list() if user['username'] == username]
         if len(user) == 0:
             abort(404)
@@ -88,7 +92,8 @@ class UserDateAPI(Resource):
         super(UserDateAPI, self).__init__()
 
     # Get user's contributions from start to end date
-    def get(self, username, start, end):
+    @staticmethod
+    def get(username, start, end):
         user = [user for user in users.get_user_list() if user['username'] == username]
         if len(user) == 0:
             abort(404)
