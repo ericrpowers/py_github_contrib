@@ -10,13 +10,26 @@ __AUTH = (os.environ.get('GH_USER', ''), os.environ.get('GH_USER_OATOKEN', ''))
 CURRENT_DATE = datetime.datetime.utcnow()
 
 
+def get_request(url, auth, in_parallel=False):
+    if in_parallel is True:
+        if __AUTH[0] and __AUTH[1]:
+            return grequests.get(url, auth=__AUTH)
+        else:
+            return grequests.get(url)
+    else:
+        if __AUTH[0] and __AUTH[1]:
+            return requests.get(url, auth=__AUTH)
+        else:
+            return requests.get(url)
+
+
 def is_user(username):
-    r = requests.get('https://api.github.com/users/' + username, auth=__AUTH)
+    r = get_request('https://api.github.com/users/' + username, __AUTH)
     return r.ok
 
 
 def get_repos(username):
-    r = requests.get('https://api.github.com/users/' + username + '/repos?type=all', auth=__AUTH)
+    r = get_request('https://api.github.com/users/' + username + '/repos?type=all', __AUTH)
     if not r.ok:
         return None
     repo_list = json.loads(r.text or r.content)
@@ -37,7 +50,7 @@ def get_contributions(username):
     response_list_dict = []
     for cmd in ['/commits?author=', '/issues?creator=']:
         url_list = [init_url + repo + cmd + username for repo in repos]
-        request_list = [grequests.get(url, auth=__AUTH) for url in url_list]
+        request_list = [get_request(url, __AUTH, True) for url in url_list]
         response_list_dict.append(grequests.imap(request_list))
 
     # Add up everything with respect to the date

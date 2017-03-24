@@ -46,6 +46,8 @@ To run the REST server:
 
 ### REST APIs
 
+> Requires username and password to make requests (BasicAuth currently)
+
 Base route is `/ghuc/api/v1.0/users` (BASE) with the following support:
 
 * GET
